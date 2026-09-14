@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Evolução · Projeto Eterno</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#15130f;
+    --surface:#211d17;
+    --surface-2:#2b261d;
+    --line:#3a3427;
+    --text:#ede6d8;
+    --text-muted:#948a78;
+    --accent:#4a9490;
+    --accent-dim:#2f5c59;
+    --gold:#c99a3b;
+    --danger:#b3543f;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg); color:var(--text); font-family:'Source Sans 3', sans-serif;
+    -webkit-font-smoothing:antialiased; min-height:100vh; padding-bottom:28px;
+  }
+  h1,h2,.num{font-family:'Space Grotesk', sans-serif;}
+  a{color:inherit;}
+
+  header.top{ padding:18px 16px 10px; }
+  header.top .eyebrow{color:var(--gold); font-size:12.5px; letter-spacing:.02em;}
+  header.top h1{font-size:22px; margin:2px 0 0; font-weight:600;}
+  header.top .back{
+    display:inline-flex; align-items:center; gap:4px; margin-top:10px;
+    font-size:12.5px; color:var(--accent); text-decoration:none; font-weight:600;
+  }
+
+  main{padding:0 16px;}
+  section{margin-bottom:26px;}
+  section h2{font-size:15px; font-weight:600; margin:0 0 4px;}
+  section .desc{font-size:12px; color:var(--text-muted); margin-bottom:12px; line-height:1.4;}
+
+  .empty{
+    background:var(--surface); border:1px dashed var(--line); border-radius:var(--radius);
+    padding:22px 16px; text-align:center; color:var(--text-muted); font-size:13.5px;
+  }
+
+  /* --- grade semanas x dias --- */
+  .grid-wrap{overflow-x:auto; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:12px;}
+  table.grid{border-collapse:collapse; width:100%; min-width:420px;}
+  table.grid th, table.grid td{padding:6px 8px; text-align:center; font-size:12px;}
+  table.grid th{color:var(--text-muted); font-weight:600; font-size:11px;}
+  table.grid th:first-child, table.grid td:first-child{text-align:left; position:sticky; left:0; background:var(--surface);}
+  table.grid td.cell{border-radius:6px;}
+  .dot{width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:700;}
+  .dot.full{background:var(--accent); color:#0f1a19;}
+  .dot.partial{background:var(--gold); color:#241a08;}
+  .dot.none{background:var(--surface-2); color:var(--text-muted); border:1px solid var(--line);}
+  .row-week-total{font-size:10.5px; color:var(--text-muted); margin-top:1px;}
+
+  /* --- seletor de exercício --- */
+  .selector{display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;}
+  select{
+    background:var(--surface-2); color:var(--text); border:1px solid var(--line); border-radius:8px;
+    padding:9px 10px; font-family:'Source Sans 3'; font-size:13px; flex:1; min-width:140px;
+  }
+
+  .chart-box{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:14px; height:220px;}
+
+  .stat-row{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;}
+  .stat-card{
+    flex:1; min-width:100px; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:12px; text-align:center;
+  }
+  .stat-card .val{font-family:'Space Grotesk'; font-size:19px; font-weight:700;}
+  .stat-card .val.up{color:var(--accent);}
+  .stat-card .val.down{color:var(--danger);}
+  .stat-card .lbl{font-size:10.5px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin-top:3px;}
+
+  /* --- tabela comparativa --- */
+  .comp-wrap{overflow-x:auto; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:12px;}
+  table.comp{border-collapse:collapse; width:100%; min-width:520px; font-size:12px;}
+  table.comp th, table.comp td{padding:7px 9px; text-align:center; white-space:nowrap;}
+  table.comp th{color:var(--text-muted); font-weight:600; font-size:11px;}
+  table.comp th:first-child, table.comp td:first-child{
+    text-align:left; position:sticky; left:0; background:var(--surface); white-space:normal; max-width:150px;
+  }
+  table.comp td.up{color:var(--accent); font-weight:600;}
+  table.comp td.down{color:var(--danger); font-weight:600;}
+  table.comp td.empty-cell{color:var(--text-muted); opacity:.4;}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="eyebrow">PROJETO ETERNO · FASE 2</div>
+  <h1>Evolução</h1>
+  <a class="back" href="fase2-2.html">← Voltar ao treino</a>
+</header>
+
+<main>
+
+  <section>
+    <h2>Treinos feitos por semana</h2>
+    <div class="desc">Cheio = todos os exercícios do dia marcados. Metade = parcial. Vazio = não feito.</div>
+    <div id="weekGridWrap"></div>
+  </section>
+
+  <section>
+    <h2>Progressão de carga por exercício</h2>
+    <div class="desc">Escolha o treino e o exercício para ver a evolução de carga semana a semana.</div>
+    <div class="selector">
+      <select id="selDay"></select>
+      <select id="selEx"></select>
+    </div>
+    <div class="chart-box"><canvas id="loadChart"></canvas></div>
+    <div class="stat-row" id="statRow"></div>
+  </section>
+
+  <section>
+    <h2>Comparativo geral (kg por semana)</h2>
+    <div class="desc">Verde = carga subiu em relação à semana anterior registrada. Vermelho = caiu.</div>
+    <div class="comp-wrap" id="compWrap"></div>
+  </section>
+
+</main>
+
+<script>
+const store = {
+  get(k, fallback){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : fallback; }catch(e){ return fallback; } }
+};
+
+const WORKOUTS_META = {
+  A: { title:'Superiores completos', names:['Supino inclinado com halteres','Puxada alta com pegada neutra','Supino reto com halteres','Remada com peito apoiado','Elevação lateral com halteres','Rosca alternada com halteres','Tríceps na polia com corda'] },
+  B: { title:'Inferiores / quadríceps', names:['Agachamento no hack','Leg press','Levantamento romeno com halteres','Cadeira flexora','Panturrilha em pé na máquina','Dead bug'] },
+  C: { title:'Empurrar / deltoides', names:['Supino inclinado no Smith','Crucifixo no peck deck','Desenvolvimento sentado','Elevação lateral com halteres','Tríceps acima da cabeça na polia','Tríceps na polia'] },
+  D: { title:'Puxar / costas e braços', names:['Puxada alta com pegada pronada','Remada baixa na polia','Pullover na polia','Crucifixo inverso na máquina','Rosca inclinada com halteres','Rosca martelo com halteres'] },
+  E: { title:'Inferiores / posterior', names:['Levantamento romeno com barra/halteres','Elevação pélvica (máquina/barra)','Agachamento búlgaro com halteres','Cadeira extensora','Mesa flexora','Panturrilha sentada','Prancha lateral'] },
+};
+const DAYS = ['A','B','C','D','E'];
+const history = store.get('fe2_history', {});
+const startIso = store.get('fe2_startdate', null);
+const START_DATE = startIso ? new Date(startIso + 'T00:00:00') : new Date();
+
+function weekDateRange(weekNum){
+  const MS_DAY = 86400000;
+  const start = new Date(START_DATE.getTime() + (weekNum - 1) * 7 * MS_DAY);
+  const end = new Date(start.getTime() + 6 * MS_DAY);
+  const fmt = d => d.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
+  return `${fmt(start)}–${fmt(end)}`;
+}
+
+const weeksWithData = Object.keys(history).map(Number).sort((a,b)=>a-b);
+const hasAnyData = weeksWithData.length > 0;
+
+if (!hasAnyData){
+  document.getElementById('weekGridWrap').innerHTML = '<div class="empty">Nenhum treino registrado ainda. Marque exercícios no logbook para ver a evolução aqui.</div>';
+  document.querySelector('.selector').style.display = 'none';
+  document.querySelector('.chart-box').style.display = 'none';
+  document.getElementById('compWrap').innerHTML = '<div class="empty">Sem dados ainda.</div>';
+} else {
+
+  /* ---------------- GRADE DE SEMANAS x DIAS ---------------- */
+  function dayStatus(week, day){
+    const meta = WORKOUTS_META[day];
+    const total = meta.names.length;
+    const wk = history[week] && history[week][day];
+    if (!wk) return {done:0, total};
+    let done = 0;
+    Object.values(wk).forEach(e=>{ if (e.done) done++; });
+    return {done, total};
+  }
+
+  let gridHtml = '<table class="grid"><thead><tr><th>Semana</th>' + DAYS.map(d=>`<th>${d}</th>`).join('') + '</tr></thead><tbody>';
+  weeksWithData.forEach(w=>{
+    gridHtml += `<tr><td>${w}<div class="row-week-total">${weekDateRange(w)}</div></td>`;
+    DAYS.forEach(day=>{
+      const st = dayStatus(w, day);
+      let cls = 'none', label = '–';
+      if (st.done > 0 && st.done === st.total){ cls = 'full'; label = '✓'; }
+      else if (st.done > 0){ cls = 'partial'; label = st.done + '/' + st.total; }
+      gridHtml += `<td class="cell"><span class="dot ${cls}">${label}</span></td>`;
+    });
+    gridHtml += '</tr>';
+  });
+  gridHtml += '</tbody></table>';
+  document.getElementById('weekGridWrap').innerHTML = `<div class="grid-wrap">${gridHtml}</div>`;
+
+  /* ---------------- SELETORES ---------------- */
+  const selDay = document.getElementById('selDay');
+  const selEx = document.getElementById('selEx');
+  DAYS.forEach(d=>{
+    const opt = document.createElement('option');
+    opt.value = d; opt.textContent = `${d} · ${WORKOUTS_META[d].title}`;
+    selDay.appendChild(opt);
+  });
+
+  function fillExSelect(day){
+    selEx.innerHTML = '';
+    WORKOUTS_META[day].names.forEach((name, i)=>{
+      const opt = document.createElement('option');
+      opt.value = i; opt.textContent = name;
+      selEx.appendChild(opt);
+    });
+  }
+  fillExSelect(selDay.value);
+  selDay.addEventListener('change', ()=>{ fillExSelect(selDay.value); renderChart(); });
+  selEx.addEventListener('change', renderChart);
+
+  /* ---------------- GRÁFICO DE CARGA ---------------- */
+  let chartInstance = null;
+  function seriesFor(day, idx){
+    const labels = [], values = [];
+    weeksWithData.forEach(w=>{
+      const e = history[w] && history[w][day] && history[w][day][idx];
+      if (e && e.kg !== '' && e.kg != null){
+        labels.push('S' + w);
+        values.push(parseFloat(e.kg));
+      }
+    });
+    return {labels, values};
+  }
+
+  function renderChart(){
+    const day = selDay.value, idx = selEx.value;
+    const {labels, values} = seriesFor(day, idx);
+    const ctx = document.getElementById('loadChart').getContext('2d');
+    if (chartInstance) chartInstance.destroy();
+
+    if (values.length === 0){
+      document.getElementById('statRow').innerHTML = '<div class="empty" style="flex:1;">Sem cargas registradas para este exercício ainda.</div>';
+      chartInstance = new Chart(ctx, { type:'line', data:{labels:[], datasets:[]}, options:{responsive:true, maintainAspectRatio:false} });
+      return;
+    }
+
+    chartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          data: values,
+          borderColor: '#4a9490',
+          backgroundColor: 'rgba(74,148,144,.15)',
+          pointBackgroundColor: '#c99a3b',
+          pointRadius: 4,
+          tension: 0.25,
+          fill: true,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display:false } },
+        scales: {
+          x: { ticks: { color:'#948a78' }, grid: { color:'#3a3427' } },
+          y: { ticks: { color:'#948a78' }, grid: { color:'#3a3427' }, title:{display:true, text:'kg', color:'#948a78'} }
+        }
+      }
+    });
+
+    const first = values[0], last = values[values.length - 1];
+    const diff = last - first;
+    const pct = first !== 0 ? (diff / first * 100) : 0;
+    const weekOverWeek = values.length > 1 ? (values[values.length-1] - values[values.length-2]) : 0;
+    const cls = diff > 0 ? 'up' : (diff < 0 ? 'down' : '');
+    const wowCls = weekOverWeek > 0 ? 'up' : (weekOverWeek < 0 ? 'down' : '');
+    document.getElementById('statRow').innerHTML = `
+      <div class="stat-card"><div class="val">${first}kg</div><div class="lbl">Primeira</div></div>
+      <div class="stat-card"><div class="val">${last}kg</div><div class="lbl">Última</div></div>
+      <div class="stat-card"><div class="val ${cls}">${diff>0?'+':''}${diff.toFixed(1).replace(/\.0$/,'')}kg</div><div class="lbl">Evolução total (${pct>=0?'+':''}${pct.toFixed(0)}%)</div></div>
+      <div class="stat-card"><div class="val ${wowCls}">${weekOverWeek>0?'+':''}${weekOverWeek.toFixed(1).replace(/\.0$/,'')}kg</div><div class="lbl">Última semana</div></div>
+    `;
+  }
+  renderChart();
+
+  /* ---------------- TABELA COMPARATIVA GERAL ---------------- */
+  let compHtml = '<table class="comp"><thead><tr><th>Exercício</th>' + weeksWithData.map(w=>`<th>S${w}</th>`).join('') + '</tr></thead><tbody>';
+  DAYS.forEach(day=>{
+    WORKOUTS_META[day].names.forEach((name, idx)=>{
+      let rowVals = [];
+      weeksWithData.forEach(w=>{
+        const e = history[w] && history[w][day] && history[w][day][idx];
+        rowVals.push(e && e.kg !== '' ? parseFloat(e.kg) : null);
+      });
+      if (rowVals.every(v=>v===null)) return; // exercício nunca registrado, não polui a tabela
+      compHtml += `<tr><td>${day} · ${name}</td>`;
+      let prevVal = null;
+      rowVals.forEach(v=>{
+        if (v === null){ compHtml += '<td class="empty-cell">–</td>'; return; }
+        let cls = '';
+        if (prevVal !== null){ cls = v > prevVal ? 'up' : (v < prevVal ? 'down' : ''); }
+        compHtml += `<td class="${cls}">${v}</td>`;
+        prevVal = v;
+      });
+      compHtml += '</tr>';
+    });
+  });
+  compHtml += '</tbody></table>';
+  document.getElementById('compWrap').innerHTML = `<div class="comp-wrap">${compHtml}</div>`;
+}
+</script>
+</body>
+</html>
