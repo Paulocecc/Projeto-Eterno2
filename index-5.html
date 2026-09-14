@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projeto Eterno · Hub</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0d0d0d;
+    color: #f0f0f0;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px;
+    gap: 40px;
+  }
+
+  .top { text-align: center; }
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    letter-spacing: 5px;
+    color: #e03030;
+    line-height: 1;
+  }
+  .sub {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #555;
+    margin-top: 6px;
+  }
+  .name {
+    font-size: 13px;
+    color: #888;
+    margin-top: 10px;
+  }
+
+  .cards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .card {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    background: #1e1e1e;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    padding: 22px 20px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color .2s, transform .15s;
+  }
+  .card:hover {
+    border-color: #e03030;
+    transform: translateY(-2px);
+  }
+
+  .card-icon {
+    font-size: 36px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .card-text {}
+  .card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 1.5px;
+    color: #f0f0f0;
+    line-height: 1;
+  }
+  .card-desc {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+
+  .footer {
+    font-size: 10px;
+    color: #333;
+    text-align: center;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="logo">PROJETO<br>ETERNO</div>
+  <div class="sub">Dr. Caio Sena · Performance e Longevidade</div>
+  <div class="name">Paulo Bonfim</div>
+</div>
+
+<div class="cards">
+  <a class="card" href="fase2-2.html">
+    <div class="card-icon">📋</div>
+    <div class="card-text">
+      <div class="card-title">LOGBOOK</div>
+      <div class="card-desc">Treino semanal · 12 semanas · registre cargas e séries</div>
+    </div>
+  </a>
+  <a class="card" href="evolucao.html">
+    <div class="card-icon">📈</div>
+    <div class="card-text">
+      <div class="card-title">EVOLUÇÃO</div>
+      <div class="card-desc">Comparativo entre semanas · progressão de carga por exercício</div>
+    </div>
+  </a>
+  <a class="card" href="lista-compras-projeto-eterno.html">
+    <div class="card-icon">🛒</div>
+    <div class="card-text">
+      <div class="card-title">LISTA DE COMPRAS</div>
+      <div class="card-desc">Dieta 7 dias · ~2.250 kcal · marque os itens no mercado</div>
+    </div>
+  </a>
+</div>
+
+<div class="footer">Protocolo confidencial · 19/06/2026</div>
+
+</body>
+</html>
