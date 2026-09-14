@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Treino · Projeto Eterno</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#15130f;
+    --surface:#211d17;
+    --surface-2:#2b261d;
+    --line:#3a3427;
+    --text:#ede6d8;
+    --text-muted:#948a78;
+    --accent:#4a9490;
+    --accent-dim:#2f5c59;
+    --gold:#c99a3b;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Source Sans 3', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    padding-bottom:24px;
+  }
+  h1,h2,.num,.clock-lg{font-family:'Space Grotesk', sans-serif;}
+
+  header.top{
+    position:sticky; top:0; z-index:20;
+    background:linear-gradient(180deg, var(--bg) 78%, transparent);
+    padding:18px 16px 8px;
+  }
+  header.top .eyebrow{color:var(--gold); font-size:12.5px; letter-spacing:.02em;}
+  header.top h1{font-size:22px; margin:2px 0 0; font-weight:600; line-height:1.2;}
+  header.top .sub{color:var(--text-muted); font-size:13px; margin-top:2px;}
+
+  main{padding:0 16px 24px;}
+
+  /* --- cronômetro geral --- */
+  .stopwatch{
+    background:var(--surface); border:1px solid var(--line); border-radius:14px;
+    padding:18px 16px; margin:14px 0 18px; text-align:center;
+  }
+  .stopwatch .clock-lg{
+    font-size:44px; font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:.02em;
+    color:var(--text);
+  }
+  .stopwatch.running .clock-lg{color:var(--gold);}
+  .stopwatch .label{font-size:11.5px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:2px;}
+  .stopwatch .buttons{display:flex; gap:10px; margin-top:14px;}
+  .stopwatch button{
+    flex:1; border:1px solid var(--line); background:var(--surface-2); color:var(--text);
+    font-family:'Source Sans 3'; font-weight:600; font-size:14px; padding:11px 0; border-radius:8px;
+    cursor:pointer;
+  }
+  .stopwatch button.primary{background:var(--accent-dim); border-color:var(--accent); color:var(--text);}
+  .stopwatch .last{font-size:12px; color:var(--text-muted); margin-top:10px;}
+
+  /* --- dias A-E --- */
+  .day-row{display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; margin-bottom:16px;}
+  .day-pill{
+    flex:0 0 auto; min-width:56px; text-align:center;
+    background:var(--surface); border:1px solid var(--line); border-radius:8px;
+    padding:8px 6px; cursor:pointer; color:var(--text-muted);
+  }
+  .day-pill .letter{font-family:'Space Grotesk'; font-size:17px; font-weight:700; color:var(--text);}
+  .day-pill .wd{font-size:10.5px; text-transform:uppercase; letter-spacing:.05em;}
+  .day-pill.active{border-color:var(--accent); background:var(--accent-dim);}
+  .day-pill.active .letter, .day-pill.active .wd{color:var(--text);}
+  .day-pill.rest{opacity:.55;}
+
+  .day-meta{
+    display:flex; justify-content:space-between; align-items:baseline;
+    margin-bottom:14px; color:var(--text-muted); font-size:13px;
+  }
+  .day-meta .title{color:var(--text); font-family:'Space Grotesk'; font-size:17px; font-weight:600;}
+  .day-meta .stats span{color:var(--gold); font-weight:600;}
+
+  .rest-day-msg{
+    background:var(--surface); border:1px dashed var(--line); border-radius:var(--radius);
+    padding:20px 16px; text-align:center; color:var(--text-muted); font-size:14px;
+  }
+
+  /* --- exercício --- */
+  .exercise{
+    background:var(--surface); border-left:3px solid var(--accent);
+    border-radius:0 var(--radius) var(--radius) 0; padding:12px 14px; margin-bottom:10px;
+  }
+  .exercise.done{border-left-color:var(--line); opacity:.6;}
+  .ex-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .ex-name{font-size:14.5px; font-weight:600; line-height:1.3;}
+  .ex-scheme{color:var(--text-muted); font-size:12.5px; margin-top:2px;}
+  .ex-check{
+    flex:0 0 auto; width:26px; height:26px; border-radius:50%; border:1.5px solid var(--line);
+    background:transparent; color:var(--text); cursor:pointer; font-size:14px; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .exercise.done .ex-check{background:var(--accent); border-color:var(--accent);}
+  .ex-controls{display:flex; gap:8px; margin-top:10px;}
+  .ex-controls input{
+    width:70px; background:var(--surface-2); border:1px solid var(--line); border-radius:6px;
+    color:var(--text); font-family:'Space Grotesk'; padding:6px 8px; font-size:13px;
+  }
+  .ex-controls label{font-size:11px; color:var(--text-muted); display:block; margin-bottom:3px;}
+
+  .day-note{
+    background:var(--surface-2); border-radius:var(--radius); padding:10px 12px;
+    font-size:12.5px; color:var(--text-muted); margin-top:6px; line-height:1.4;
+  }
+
+  .pending-note{
+    background:rgba(201,154,59,.12); border:1px solid var(--gold); border-radius:var(--radius);
+    padding:10px 12px; font-size:12.5px; color:var(--text); margin-bottom:16px; line-height:1.5;
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="eyebrow">PROJETO ETERNO · FASE 2 · ACADEMIA</div>
+  <h1>Treino</h1>
+  <div class="sub">Plano-base a validar · Paulo Bomfim</div>
+</header>
+
+<main>
+  <div class="pending-note">Peso, altura, idade e histórico de saúde ainda não foram confirmados. Ajuste cargas com cautela até validar com o profissional.</div>
+
+  <div class="stopwatch" id="stopwatch">
+    <div class="label">Tempo de sessão</div>
+    <div class="clock-lg" id="swClock">0:00:00</div>
+    <div class="buttons">
+      <button id="swToggle" class="primary">Iniciar</button>
+      <button id="swReset">Zerar</button>
+    </div>
+    <div class="last" id="swLast"></div>
+  </div>
+
+  <div class="day-row" id="dayRow"></div>
+
+  <div class="day-meta">
+    <div><div class="title" id="dayTitle">—</div></div>
+    <div class="stats"><span id="daySeries">—</span> séries · <span id="dayTime">—</span></div>
+  </div>
+
+  <div id="exerciseList"></div>
+  <div class="day-note" id="dayNote"></div>
+</main>
+
+<script>
+/* ---------------- DADOS ---------------- */
+const WEEK_ORDER = ['A','B','rest1','C','D','E','rest2'];
+const WEEKDAY_LABEL = {A:'SEG',B:'TER',rest1:'QUA',C:'QUI',D:'SEX',E:'SAB',rest2:'DOM'};
+
+const WORKOUTS = {
+  A: { title:'Superiores completos', series:21, time:'65–85 min',
+    note:'Anote regulagem do banco e pegador da puxada — máquinas diferentes não têm cargas comparáveis.',
+    ex:[
+      {n:'Supino inclinado com halteres', s:'4 × 6–10', r:'150–180s', rir:'2'},
+      {n:'Puxada alta com pegada neutra', s:'4 × 8–12', r:'120–150s', rir:'2'},
+      {n:'Supino reto com halteres', s:'3 × 8–12', r:'120–180s', rir:'2'},
+      {n:'Remada com peito apoiado', s:'3 × 8–12', r:'120s', rir:'2'},
+      {n:'Elevação lateral com halteres', s:'3 × 12–20', r:'60–90s', rir:'1–2'},
+      {n:'Rosca alternada com halteres', s:'2 × 10–15', r:'60–90s', rir:'1–2'},
+      {n:'Tríceps na polia com corda', s:'2 × 10–15', r:'60–90s', rir:'1–2'},
+    ]},
+  B: { title:'Inferiores / quadríceps', series:20, time:'65–85 min',
+    note:'Sem hack, use agachamento guiado ou goblet nas mesmas séries — não some as alternativas.',
+    ex:[
+      {n:'Agachamento no hack', s:'4 × 6–10', r:'150–180s', rir:'2'},
+      {n:'Leg press', s:'3 × 10–15', r:'150s', rir:'2'},
+      {n:'Levantamento romeno com halteres', s:'3 × 8–12', r:'150–180s', rir:'2'},
+      {n:'Cadeira flexora', s:'3 × 10–15', r:'90–120s', rir:'1–2'},
+      {n:'Panturrilha em pé na máquina', s:'4 × 10–15', r:'60–90s', rir:'1–2'},
+      {n:'Dead bug', s:'3 × 8–12 / lado', r:'45–60s', rir:'técnico'},
+    ]},
+  C: { title:'Empurrar / deltoides', series:18, time:'55–75 min',
+    note:'Smith não elimina ajuste e supervisão. Trajetória incômoda → troque pelo supino inclinado com halteres.',
+    ex:[
+      {n:'Supino inclinado no Smith', s:'3 × 8–12', r:'120–180s', rir:'2'},
+      {n:'Crucifixo no peck deck', s:'3 × 10–15', r:'90s', rir:'1–2'},
+      {n:'Desenvolvimento sentado', s:'3 × 6–10', r:'120–180s', rir:'2'},
+      {n:'Elevação lateral com halteres', s:'4 × 12–20', r:'60–90s', rir:'1–2'},
+      {n:'Tríceps acima da cabeça na polia', s:'3 × 10–15', r:'60–90s', rir:'1–2'},
+      {n:'Tríceps na polia', s:'2 × 12–15', r:'60–90s', rir:'1–2'},
+    ]},
+  D: { title:'Puxar / costas e braços', series:17, time:'55–75 min',
+    note:'Não precisa manter escápulas travadas em retração — movimento controlado, sem compensação grosseira.',
+    ex:[
+      {n:'Puxada alta com pegada pronada', s:'4 × 8–12', r:'120–150s', rir:'2'},
+      {n:'Remada baixa na polia', s:'3 × 8–12', r:'120s', rir:'2'},
+      {n:'Pullover na polia', s:'2 × 12–15', r:'90s', rir:'1–2'},
+      {n:'Crucifixo inverso na máquina', s:'3 × 12–20', r:'60–90s', rir:'1–2'},
+      {n:'Rosca inclinada com halteres', s:'3 × 8–12', r:'60–90s', rir:'1–2'},
+      {n:'Rosca martelo com halteres', s:'2 × 10–15', r:'60–90s', rir:'1–2'},
+    ]},
+  E: { title:'Inferiores / posterior', series:22, time:'70–90 min',
+    note:'Romeno aparece 2x na semana (6 séries totais) — isso não autoriza terra pesado em outro dia.',
+    ex:[
+      {n:'Levantamento romeno com barra/halteres', s:'3 × 6–10', r:'150–180s', rir:'2'},
+      {n:'Elevação pélvica (máquina/barra)', s:'3 × 8–12', r:'120–150s', rir:'2'},
+      {n:'Agachamento búlgaro com halteres', s:'3 × 8–12 / lado', r:'120–150s', rir:'2'},
+      {n:'Cadeira extensora', s:'3 × 12–15', r:'90s', rir:'1–2'},
+      {n:'Mesa flexora', s:'3 × 10–15', r:'90–120s', rir:'1–2'},
+      {n:'Panturrilha sentada', s:'4 × 12–20', r:'60–90s', rir:'1–2'},
+      {n:'Prancha lateral', s:'3 × 20–40s / lado', r:'45–60s', rir:'técnico'},
+    ]},
+};
+
+/* ---------------- ESTADO / STORAGE ---------------- */
+const store = {
+  get(k, fallback){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : fallback; }catch(e){ return fallback; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+
+let currentDay = store.get('fe2_day', autoDayFromWeekday());
+let logs = store.get('fe2_logs', {}); // { 'A_0': {done:true, kg:'20'} }
+
+function autoDayFromWeekday(){
+  const d = new Date().getDay(); // 0=Sun..6=Sat
+  return ['rest2','A','B','rest1','C','D','E'][d];
+}
+
+/* ---------------- CRONÔMETRO GERAL DA SESSÃO ---------------- */
+// sw = { accumulated: segundos já contados, running: bool, startTs: epoch ms quando ligou, lastSession: segundos da última sessão finalizada }
+let sw = store.get('fe2_stopwatch', { accumulated: 0, running: false, startTs: null, lastSession: null });
+let swInterval = null;
+
+function formatHMS(totalSeconds){
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+  return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function currentElapsed(){
+  let total = sw.accumulated;
+  if (sw.running && sw.startTs){
+    total += Math.floor((Date.now() - sw.startTs) / 1000);
+  }
+  return total;
+}
+
+function renderStopwatch(){
+  const box = document.getElementById('stopwatch');
+  const clock = document.getElementById('swClock');
+  const toggle = document.getElementById('swToggle');
+  const last = document.getElementById('swLast');
+  clock.textContent = formatHMS(currentElapsed());
+  box.classList.toggle('running', sw.running);
+  toggle.textContent = sw.running ? 'Pausar' : 'Iniciar';
+  last.textContent = sw.lastSession ? `Última sessão: ${formatHMS(sw.lastSession)}` : '';
+}
+
+function tickStopwatch(){
+  document.getElementById('swClock').textContent = formatHMS(currentElapsed());
+}
+
+function startStopwatchInterval(){
+  if (swInterval) clearInterval(swInterval);
+  swInterval = setInterval(tickStopwatch, 1000);
+}
+
+document.getElementById('swToggle').addEventListener('click', ()=>{
+  if (sw.running){
+    sw.accumulated = currentElapsed();
+    sw.running = false;
+    sw.startTs = null;
+    if (swInterval){ clearInterval(swInterval); swInterval = null; }
+  } else {
+    sw.running = true;
+    sw.startTs = Date.now();
+    startStopwatchInterval();
+  }
+  store.set('fe2_stopwatch', sw);
+  renderStopwatch();
+});
+
+document.getElementById('swReset').addEventListener('click', ()=>{
+  const finished = currentElapsed();
+  sw = { accumulated: 0, running: false, startTs: null, lastSession: finished > 0 ? finished : sw.lastSession };
+  if (swInterval){ clearInterval(swInterval); swInterval = null; }
+  store.set('fe2_stopwatch', sw);
+  renderStopwatch();
+});
+
+if (sw.running) startStopwatchInterval();
+renderStopwatch();
+
+/* ---------------- RENDER: TREINO ---------------- */
+function renderDayRow(){
+  const row = document.getElementById('dayRow');
+  row.innerHTML = '';
+  WEEK_ORDER.forEach(code=>{
+    const isRest = code.startsWith('rest');
+    const pill = document.createElement('div');
+    pill.className = 'day-pill' + (isRest ? ' rest' : '') + (code===currentDay ? ' active' : '');
+    pill.innerHTML = `<div class="letter">${isRest ? '—' : code}</div><div class="wd">${WEEKDAY_LABEL[code]}</div>`;
+    pill.addEventListener('click', ()=>{ currentDay = code; store.set('fe2_day', code); renderDay(); });
+    row.appendChild(pill);
+  });
+}
+
+function renderDay(){
+  renderDayRow();
+  const isRest = currentDay.startsWith('rest');
+  const list = document.getElementById('exerciseList');
+  const note = document.getElementById('dayNote');
+  if (isRest){
+    document.getElementById('dayTitle').textContent = 'Recuperação';
+    document.getElementById('daySeries').textContent = '0';
+    document.getElementById('dayTime').textContent = '—';
+    list.innerHTML = '<div class="rest-day-msg">Sem musculação. Caminhada leve de 20–30 min é opcional — sem virar outra sessão intensa.</div>';
+    note.innerHTML = '';
+    return;
+  }
+  const w = WORKOUTS[currentDay];
+  document.getElementById('dayTitle').textContent = `${currentDay} · ${w.title}`;
+  document.getElementById('daySeries').textContent = w.series;
+  document.getElementById('dayTime').textContent = w.time;
+  note.innerHTML = w.note;
+
+  list.innerHTML = '';
+  w.ex.forEach((ex, i)=>{
+    const logKey = `${currentDay}_${i}`;
+    const logged = logs[logKey] || {done:false, kg:''};
+    const card = document.createElement('div');
+    card.className = 'exercise' + (logged.done ? ' done' : '');
+    card.innerHTML = `
+      <div class="ex-top">
+        <div>
+          <div class="ex-name">${ex.n}</div>
+          <div class="ex-scheme">${ex.s} · descanso ${ex.r} · RIR ${ex.rir}</div>
+        </div>
+        <button class="ex-check">${logged.done ? '✓' : ''}</button>
+      </div>
+      <div class="ex-controls">
+        <div>
+          <label>Carga (kg)</label>
+          <input type="text" inputmode="decimal" value="${logged.kg}" placeholder="—">
+        </div>
+      </div>
+    `;
+    card.querySelector('.ex-check').addEventListener('click', ()=>{
+      logged.done = !logged.done;
+      logs[logKey] = logged;
+      store.set('fe2_logs', logs);
+      renderDay();
+    });
+    card.querySelector('input').addEventListener('input', (e)=>{
+      logged.kg = e.target.value;
+      logs[logKey] = logged;
+      store.set('fe2_logs', logs);
+    });
+    list.appendChild(card);
+  });
+}
+
+/* ---------------- INIT ---------------- */
+renderDay();
+</script>
+</body>
+</html>
